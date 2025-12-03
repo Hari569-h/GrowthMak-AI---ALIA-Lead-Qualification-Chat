@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowthMak AI - Lead Qualification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --chat-bg: #ffffff;
+            --primary-text: #0f172a;
+            --secondary-text: #64748b;
+            --accent-color: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
+            --user-bubble-bg: #2563eb;
+            --user-bubble-text: #ffffff;
+            --alia-bubble-bg: #f1f5f9;
+            --alia-bubble-text: #0f172a;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--chat-bg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 20px;
+            color: #15803d;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .message.alia {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: var(--user-bubble-bg);
+            color: var(--user-bubble-text);
+            border-bottom-right-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.alia .message-bubble {
+            background: var(--alia-bubble-bg);
+            color: var(--alia-bubble-text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            margin-top: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 2rem;
+            background: var(--chat-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 1rem;
+            background: var(--primary-bg);
+            padding: 0.75rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+            color: var(--primary-text);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .send-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 1rem;
+            background: var(--alia-bubble-bg);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            margin-bottom: 1rem;
+            margin-left: 2rem;
+            /* Align with ALIA messages */
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .error-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 2rem;
+            display: none;
+            text-align: center;
+        }
+
+        .error-banner.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                max-width: 100%;
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .chat-area {
+                padding: 1rem;
+            }
+
+            .input-area {
+                padding: 1rem;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">GM</div>
+                GrowthMak AI
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                ALIA Online
+            </div>
+        </header>
+
+        <div class="error-banner" id="error-banner"></div>
+
+        <main class="chat-area" id="chat-window">
+            <!-- Messages will appear here -->
+        </main>
+
+        <div class="typing-indicator" id="typing-indicator" style="display: none;">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <footer class="input-area">
+            <div class="input-wrapper">
+                <input type="text" class="message-input" id="message-input" placeholder="Type your message here..."
+                    autocomplete="off">
+                <button class="send-btn" id="send-button">
+                    <span>Send</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <audio id="audio-player" style="display: none;"></audio>
+
+    <script>
+        class AliaApp {
+            constructor() {
+                this.sessionId = null;
+                this.serverInstanceId = null;
+                this.isProcessing = false;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.restoreSession();
+            }
+
+            initializeElements() {
+                this.chatWindow = document.getElementById('chat-window');
+                this.messageInput = document.getElementById('message-input');
+                this.sendButton = document.getElementById('send-button');
+                this.typingIndicator = document.getElementById('typing-indicator');
+                this.errorBanner = document.getElementById('error-banner');
+                this.audioPlayer = document.getElementById('audio-player');
+            }
+
+            bindEvents() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                // Auto-focus input on load
+                this.messageInput.focus();
+            }
+
+            restoreSession() {
+                const savedSessionId = localStorage.getItem('aliaSessionId');
+                if (savedSessionId) {
+                    this.sessionId = savedSessionId;
+                    console.log('Restored session:', this.sessionId);
+                }
+            }
+
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+
+                if (!message || this.isProcessing) return;
+
+                if (message.length > 2000) {
+                    this.showError('Message too long. Please keep it under 2000 characters.');
+                    return;
+                }
+
+                // Add user message
+                this.addMessage(message, true);
+                this.messageInput.value = '';
+                this.isProcessing = true;
+                this.sendButton.disabled = true;
+                this.showTyping();
+
+                try {
+                    const response = await fetch('/api/alia-text-chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userText: message,
+                            sessionId: this.sessionId,
+                            serverInstanceId: this.serverInstanceId,
+                            userMetadata: {
+                                timestamp: new Date().toISOString(),
+                                userAgent: navigator.userAgent
+                            }
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    // Server Restart Detection
+                    if (data.serverRestarted) {
+                        alert('Server restarted. Refreshing page...');
+                        location.reload();
+                        return;
+                    }
+
+                    if (data.success) {
+                        // Update session and server instance
+                        this.sessionId = data.sessionId;
+                        this.serverInstanceId = data.serverInstanceId;
+                        
+                        // Persist session
+                        localStorage.setItem('aliaSessionId', this.sessionId);
+
+                        // Handle assistant text
+                        if (data.assistantText) {
+                            this.addMessage(data.assistantText, false);
+                        }
+
+                        // Handle audio
+                        if (data.assistantAudioUrl) {
+                            console.log('Playing audio from URL');
+                            this.playAudio(data.assistantAudioUrl);
+                        }
+                    } else {
+                        this.showError(data.error || 'Failed to get response.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showError('Connection failed. Please try again.');
+                } finally {
+                    this.hideTyping();
+                    this.isProcessing = false;
+                    this.sendButton.disabled = false;
+                    this.messageInput.focus();
+                }
+            }
+
+            playAudio(url) {
+                this.audioPlayer.src = url;
+                this.audioPlayer.play().catch(e => console.error('Audio play failed:', e));
+            }
+
+            addMessage(text, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'alia'}`;
+
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                bubbleDiv.textContent = text;
+
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'message-meta';
+                metaDiv.textContent = isUser ? 'You' : 'ALIA';
+
+                messageDiv.appendChild(bubbleDiv);
+                messageDiv.appendChild(metaDiv);
+
+                this.chatWindow.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            showTyping() {
+                this.typingIndicator.style.display = 'flex';
+                this.scrollToBottom();
+            }
+
+            hideTyping() {
+                this.typingIndicator.style.display = 'none';
+            }
+
+            showError(message) {
+                this.errorBanner.textContent = message;
+                this.errorBanner.classList.add('show');
+                setTimeout(() => {
+                    this.errorBanner.classList.remove('show');
+                }, 5000);
+            }
+
+            scrollToBottom() {
+                this.chatWindow.scrollTop = this.chatWindow.scrollHeight;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new AliaApp();
+        });
+    </script>
+</body>
+
+</html>
